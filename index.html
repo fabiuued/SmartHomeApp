@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#1a1a2e">
+    <title>Smart Home Control</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #fff;
+            min-height: 100vh;
+            padding: 20px;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 500px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+        }
+
+        .header h1 {
+            font-size: 28px;
+            margin-bottom: 10px;
+            background: linear-gradient(45deg, #00d4ff, #7b2ff7);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            margin-top: 10px;
+        }
+
+        .status-disconnected {
+            background: #ff4757;
+        }
+
+        .status-connected {
+            background: #2ed573;
+        }
+
+        .status-locked {
+            background: #ffa502;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 20px;
+            padding: 25px;
+            margin-bottom: 20px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .card h2 {
+            font-size: 20px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .card-icon {
+            font-size: 24px;
+        }
+
+        .input-group {
+            margin-bottom: 15px;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 14px;
+            color: #ddd;
+        }
+
+        input[type="text"],
+        input[type="password"],
+        input[type="number"] {
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+
+        input:focus {
+            outline: none;
+            background: rgba(255, 255, 255, 0.15);
+            box-shadow: 0 0 0 3px rgba(0, 212, 255, 0.3);
+        }
+
+        input::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .btn {
+            width: 100%;
+            padding: 16px;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(45deg, #00d4ff, #7b2ff7);
+            color: #fff;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(0, 212, 255, 0.4);
+        }
+
+        .btn-primary:active {
+            transform: translateY(0);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .btn-success {
+            background: #2ed573;
+            color: #fff;
+        }
+
+        .btn-danger {
+            background: #ff4757;
+            color: #fff;
+        }
+
+        .control-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .control-btn {
+            padding: 20px;
+            border-radius: 15px;
+            border: none;
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .control-btn:active {
+            transform: scale(0.95);
+        }
+
+        .control-btn.active {
+            background: linear-gradient(45deg, #feca57, #ff9ff3);
+            box-shadow: 0 5px 20px rgba(254, 202, 87, 0.4);
+        }
+
+        .control-icon {
+            font-size: 32px;
+        }
+
+        .weather-display {
+            text-align: center;
+            padding: 30px;
+            background: linear-gradient(135deg, rgba(0, 212, 255, 0.2), rgba(123, 47, 247, 0.2));
+            border-radius: 20px;
+            margin-top: 15px;
+        }
+
+        .temp {
+            font-size: 48px;
+            font-weight: 700;
+            margin: 10px 0;
+        }
+
+        .weather-info {
+            font-size: 18px;
+            opacity: 0.9;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: #ddd;
+        }
+
+        .spinner {
+            border: 3px solid rgba(255, 255, 255, 0.1);
+            border-top: 3px solid #00d4ff;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .alert {
+            padding: 15px;
+            border-radius: 12px;
+            margin-bottom: 15px;
+            font-size: 14px;
+        }
+
+        .alert-error {
+            background: rgba(255, 71, 87, 0.2);
+            border: 1px solid #ff4757;
+        }
+
+        .alert-success {
+            background: rgba(46, 213, 115, 0.2);
+            border: 1px solid #2ed573;
+        }
+
+        .alert-info {
+            background: rgba(0, 212, 255, 0.2);
+            border: 1px solid #00d4ff;
+        }
+
+        .tab-nav {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 5px;
+            border-radius: 15px;
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 10px;
+            background: transparent;
+            color: #fff;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .tab-btn.active {
+            background: rgba(0, 212, 255, 0.3);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @media (max-width: 400px) {
+            .control-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>🏠 Smart Home</h1>
+            <div class="status-badge status-disconnected" id="statusBadge">
+                Nicht verbunden
+            </div>
+        </div>
+
+        <!-- Verbindungs-Karte -->
+        <div class="card" id="connectionCard">
+            <h2><span class="card-icon">🔵</span> Bluetooth Verbindung</h2>
+            <button class="btn btn-primary" id="connectBtn">Mit Arduino verbinden</button>
+            <div id="connectionStatus" class="loading hidden">
+                <div class="spinner"></div>
+                <p>Suche nach Gerät...</p>
+            </div>
+        </div>
+
+        <!-- PIN Eingabe -->
+        <div class="card hidden" id="pinCard">
+            <h2><span class="card-icon">🔐</span> PIN Eingabe</h2>
+            <div class="alert alert-info">
+                Gib deinen 4-stelligen PIN ein
+            </div>
+            <div class="input-group">
+                <input type="number" id="pinInput" placeholder="1234" maxlength="4" pattern="[0-9]{4}">
+            </div>
+            <button class="btn btn-primary" id="pinSubmitBtn">Entsperren</button>
+            <div id="pinError" class="alert alert-error hidden">
+                Falscher PIN!
+            </div>
+        </div>
+
+        <!-- Haupt-Steuerung (erst nach PIN sichtbar) -->
+        <div id="mainControl" class="hidden">
+            
+            <!-- Tab Navigation -->
+            <div class="tab-nav">
+                <button class="tab-btn active" onclick="switchTab('control')">Steuerung</button>
+                <button class="tab-btn" onclick="switchTab('wifi')">WiFi</button>
+                <button class="tab-btn" onclick="switchTab('weather')">Wetter</button>
+            </div>
+
+            <!-- Steuerungs Tab -->
+            <div class="tab-content active" id="controlTab">
+                <div class="card">
+                    <h2><span class="card-icon">💡</span> Licht Steuerung</h2>
+                    <div class="control-grid">
+                        <button class="control-btn" id="lightOnBtn" onclick="sendCommand('LIGHT_ON')">
+                            <span class="control-icon">💡</span>
+                            Licht AN
+                        </button>
+                        <button class="control-btn" id="lightOffBtn" onclick="sendCommand('LIGHT_OFF')">
+                            <span class="control-icon">🌙</span>
+                            Licht AUS
+                        </button>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h2><span class="card-icon">📊</span> System Status</h2>
+                    <button class="btn btn-secondary" onclick="sendCommand('GET_STATUS')">Status abfragen</button>
+                    <div id="statusDisplay" class="weather-display hidden">
+                        <div id="statusInfo"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- WiFi Tab -->
+            <div class="tab-content" id="wifiTab">
+                <div class="card">
+                    <h2><span class="card-icon">📡</span> WiFi Konfiguration</h2>
+                    <div class="alert alert-info">
+                        Verbinde den Arduino mit deinem WLAN
+                    </div>
+                    <div class="input-group">
+                        <label>WLAN Name (SSID)</label>
+                        <input type="text" id="wifiSSID" placeholder="MeinWLAN">
+                    </div>
+                    <div class="input-group">
+                        <label>WLAN Passwort</label>
+                        <input type="password" id="wifiPassword" placeholder="********">
+                    </div>
+                    <button class="btn btn-primary" id="wifiSubmitBtn" onclick="configureWiFi()">
+                        WLAN verbinden
+                    </button>
+                    <div id="wifiStatus" class="hidden"></div>
+                </div>
+            </div>
+
+            <!-- Wetter Tab -->
+            <div class="tab-content" id="weatherTab">
+                <div class="card">
+                    <h2><span class="card-icon">🌤️</span> Wetter</h2>
+                    <button class="btn btn-primary" onclick="getWeather()">Wetter abrufen</button>
+                    <div id="weatherDisplay" class="weather-display hidden">
+                        <div class="weather-info">🌡️</div>
+                        <div class="temp" id="tempDisplay">--°C</div>
+                        <div class="weather-info" id="weatherCondition">Lädt...</div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        // Globale Variablen
+        let bluetoothDevice;
+        let bleServer;
+        let pinCharacteristic;
+        let wifiCharacteristic;
+        let commandCharacteristic;
+        let statusCharacteristic;
+        let isAuthenticated = false;
+
+        // UUIDs (müssen mit Arduino übereinstimmen!)
+        const SERVICE_UUID = '19b10000-e8f2-537e-4f6c-d104768a1214';
+        const PIN_CHAR_UUID = '19b10001-e8f2-537e-4f6c-d104768a1214';
+        const WIFI_CHAR_UUID = '19b10002-e8f2-537e-4f6c-d104768a1214';
+        const COMMAND_CHAR_UUID = '19b10003-e8f2-537e-4f6c-d104768a1214';
+        const STATUS_CHAR_UUID = '19b10004-e8f2-537e-4f6c-d104768a1214';
+
+        // Bluetooth Verbindung
+        document.getElementById('connectBtn').addEventListener('click', async () => {
+            try {
+                document.getElementById('connectionStatus').classList.remove('hidden');
+                document.getElementById('connectBtn').disabled = true;
+
+                // Suche nach Bluetooth Gerät
+                bluetoothDevice = await navigator.bluetooth.requestDevice({
+                    filters: [{ name: 'SmartHome_H7' }],
+                    optionalServices: [SERVICE_UUID]
+                });
+
+                console.log('Gerät gefunden:', bluetoothDevice.name);
+
+                // Verbinde mit GATT Server
+                bleServer = await bluetoothDevice.gatt.connect();
+                console.log('GATT Server verbunden');
+
+                // Hole Service
+                const service = await bleServer.getPrimaryService(SERVICE_UUID);
+
+                // Hole alle Characteristics
+                pinCharacteristic = await service.getCharacteristic(PIN_CHAR_UUID);
+                wifiCharacteristic = await service.getCharacteristic(WIFI_CHAR_UUID);
+                commandCharacteristic = await service.getCharacteristic(COMMAND_CHAR_UUID);
+                statusCharacteristic = await service.getCharacteristic(STATUS_CHAR_UUID);
+
+                // Status Notifications aktivieren
+                await statusCharacteristic.startNotifications();
+                statusCharacteristic.addEventListener('characteristicvaluechanged', handleStatusChange);
+
+                document.getElementById('connectionStatus').classList.add('hidden');
+                document.getElementById('connectionCard').classList.add('hidden');
+                document.getElementById('pinCard').classList.remove('hidden');
+                updateStatusBadge('connected', 'Verbunden - PIN erforderlich');
+
+                console.log('BLE Setup komplett');
+
+            } catch (error) {
+                console.error('Verbindungsfehler:', error);
+                alert('Verbindung fehlgeschlagen: ' + error.message);
+                document.getElementById('connectionStatus').classList.add('hidden');
+                document.getElementById('connectBtn').disabled = false;
+            }
+        });
+
+        // PIN Validierung
+        document.getElementById('pinSubmitBtn').addEventListener('click', async () => {
+            const pin = document.getElementById('pinInput').value;
+
+            if (pin.length !== 4) {
+                alert('Bitte 4-stelligen PIN eingeben');
+                return;
+            }
+
+            try {
+                // PIN an Arduino senden
+                const encoder = new TextEncoder();
+                await pinCharacteristic.writeValue(encoder.encode(pin));
+
+                // Warte kurz auf Antwort
+                await new Promise(resolve => setTimeout(resolve, 500));
+
+                // Lese Antwort
+                const value = await pinCharacteristic.readValue();
+                const decoder = new TextDecoder();
+                const response = decoder.decode(value);
+
+                console.log('PIN Response:', response);
+
+                if (response === 'valid') {
+                    isAuthenticated = true;
+                    document.getElementById('pinCard').classList.add('hidden');
+                    document.getElementById('mainControl').classList.remove('hidden');
+                    updateStatusBadge('success', 'Entsperrt ✓');
+                    document.getElementById('pinError').classList.add('hidden');
+                } else {
+                    document.getElementById('pinError').classList.remove('hidden');
+                    document.getElementById('pinInput').value = '';
+                    document.getElementById('pinInput').focus();
+                }
+
+            } catch (error) {
+                console.error('PIN Fehler:', error);
+                alert('PIN Prüfung fehlgeschlagen');
+            }
+        });
+
+        // WiFi Konfiguration
+        async function configureWiFi() {
+            const ssid = document.getElementById('wifiSSID').value;
+            const password = document.getElementById('wifiPassword').value;
+
+            if (!ssid) {
+                alert('Bitte WLAN Name eingeben');
+                return;
+            }
+
+            try {
+                document.getElementById('wifiSubmitBtn').disabled = true;
+                document.getElementById('wifiSubmitBtn').textContent = 'Verbinde...';
+
+                const wifiData = JSON.stringify({
+                    ssid: ssid,
+                    password: password
+                });
+
+                const encoder = new TextEncoder();
+                await wifiCharacteristic.writeValue(encoder.encode(wifiData));
+
+                // Warte auf Antwort
+                await new Promise(resolve => setTimeout(resolve, 2000));
+
+                const value = await wifiCharacteristic.readValue();
+                const decoder = new TextDecoder();
+                const response = JSON.parse(decoder.decode(value));
+
+                console.log('WiFi Response:', response);
+
+                const statusDiv = document.getElementById('wifiStatus');
+                statusDiv.classList.remove('hidden');
+
+                if (response.status === 'connected') {
+                    statusDiv.innerHTML = `<div class="alert alert-success">✓ Verbunden!<br>IP: ${response.ip || 'N/A'}</div>`;
+                } else {
+                    statusDiv.innerHTML = `<div class="alert alert-error">✗ Verbindung fehlgeschlagen</div>`;
+                }
+
+            } catch (error) {
+                console.error('WiFi Fehler:', error);
+                alert('WiFi Konfiguration fehlgeschlagen');
+            } finally {
+                document.getElementById('wifiSubmitBtn').disabled = false;
+                document.getElementById('wifiSubmitBtn').textContent = 'WLAN verbinden';
+            }
+        }
+
+        // Command senden
+        async function sendCommand(command) {
+            if (!isAuthenticated) {
+                alert('Bitte erst PIN eingeben');
+                return;
+            }
+
+            try {
+                const encoder = new TextEncoder();
+                await commandCharacteristic.writeValue(encoder.encode(command));
+
+                console.log('Command gesendet:', command);
+
+                // Visuelle Feedback
+                if (command === 'LIGHT_ON') {
+                    document.getElementById('lightOnBtn').classList.add('active');
+                    document.getElementById('lightOffBtn').classList.remove('active');
+                } else if (command === 'LIGHT_OFF') {
+                    document.getElementById('lightOffBtn').classList.add('active');
+                    document.getElementById('lightOnBtn').classList.remove('active');
+                } else if (command === 'GET_STATUS') {
+                    // Warte kurz und lese Antwort
+                    await new Promise(resolve => setTimeout(resolve, 500));
+                    const value = await commandCharacteristic.readValue();
+                    const decoder = new TextDecoder();
+                    const response = JSON.parse(decoder.decode(value));
+                    
+                    document.getElementById('statusDisplay').classList.remove('hidden');
+                    document.getElementById('statusInfo').innerHTML = `
+                        <p><strong>WiFi:</strong> ${response.wifi ? '✓ Verbunden' : '✗ Nicht verbunden'}</p>
+                        ${response.rssi ? `<p><strong>Signal:</strong> ${response.rssi} dBm</p>` : ''}
+                        ${response.ip ? `<p><strong>IP:</strong> ${response.ip}</p>` : ''}
+                    `;
+                }
+
+            } catch (error) {
+                console.error('Command Fehler:', error);
+                alert('Befehl konnte nicht gesendet werden');
+            }
+        }
+
+        // Wetter abrufen
+        async function getWeather() {
+            try {
+                await sendCommand('GET_WEATHER');
+
+                // Warte auf Antwort
+                await new Promise(resolve => setTimeout(resolve, 1000));
+
+                const value = await commandCharacteristic.readValue();
+                const decoder = new TextDecoder();
+                const response = decoder.decode(value);
+
+                console.log('Weather Response:', response);
+
+                if (response.startsWith('ERROR')) {
+                    alert('Wetter konnte nicht abgerufen werden: ' + response);
+                    return;
+                }
+
+                const weather = JSON.parse(response);
+
+                document.getElementById('weatherDisplay').classList.remove('hidden');
+                document.getElementById('tempDisplay').textContent = weather.temp + '°C';
+                document.getElementById('weatherCondition').textContent = weather.status || 'Dummy Daten';
+
+            } catch (error) {
+                console.error('Wetter Fehler:', error);
+                alert('Wetter konnte nicht abgerufen werden');
+            }
+        }
+
+        // Status Updates von Arduino
+        function handleStatusChange(event) {
+            const value = event.target.value;
+            const decoder = new TextDecoder();
+            const status = decoder.decode(value);
+            console.log('Status Update:', status);
+        }
+
+        // Tab Wechsel
+        function switchTab(tabName) {
+            // Alle Tabs deaktivieren
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+
+            // Aktiven Tab aktivieren
+            document.getElementById(tabName + 'Tab').classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        // Status Badge Update
+        function updateStatusBadge(type, text) {
+            const badge = document.getElementById('statusBadge');
+            badge.className = 'status-badge status-' + type;
+            badge.textContent = text;
+        }
+
+        // Enter-Taste für PIN
+        document.getElementById('pinInput').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                document.getElementById('pinSubmitBtn').click();
+            }
+        });
+    </script>
+</body>
+</html>
