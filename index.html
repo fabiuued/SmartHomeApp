@@ -64,8 +64,8 @@
             background: #2ed573;
         }
 
-        .status-locked {
-            background: #ffa502;
+        .status-success {
+            background: #2ed573;
         }
 
         .card {
@@ -163,16 +163,137 @@
             border: 2px solid rgba(255, 255, 255, 0.2);
         }
 
-        .btn-success {
-            background: #2ed573;
-            color: #fff;
+        /* Toggle Switch Styles */
+        .switch-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            margin-bottom: 12px;
+            transition: all 0.3s;
         }
 
-        .btn-danger {
-            background: #ff4757;
-            color: #fff;
+        .switch-container:hover {
+            background: rgba(255, 255, 255, 0.08);
         }
 
+        .switch-label {
+            font-size: 16px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .switch-icon {
+            font-size: 22px;
+        }
+
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 34px;
+        }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ff4757;
+            transition: .4s;
+            border-radius: 34px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 26px;
+            width: 26px;
+            right: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider {
+            background-color: #2ed573;
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(-26px);
+        }
+
+        /* Button Group Styles */
+        .button-group {
+            margin-bottom: 12px;
+        }
+
+        .button-group-label {
+            font-size: 16px;
+            font-weight: 500;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .button-row {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+        }
+
+        .action-btn {
+            padding: 12px;
+            border: none;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: center;
+        }
+
+        .action-btn:active {
+            transform: scale(0.95);
+        }
+
+        .action-btn.btn-up {
+            background: linear-gradient(135deg, #00d4ff, #0099cc);
+        }
+
+        .action-btn.btn-down {
+            background: linear-gradient(135deg, #7b2ff7, #5a1fb7);
+        }
+
+        .action-btn.btn-stop {
+            background: linear-gradient(135deg, #ff4757, #cc3644);
+        }
+
+        .action-btn.btn-open {
+            background: linear-gradient(135deg, #2ed573, #25a85a);
+        }
+
+        .action-btn.btn-close {
+            background: linear-gradient(135deg, #ff4757, #cc3644);
+        }
+
+        /* Control Grid (für normale Buttons) */
         .control-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -209,6 +330,7 @@
             font-size: 32px;
         }
 
+        /* Weather Styles */
         .weather-display {
             text-align: center;
             padding: 30px;
@@ -226,6 +348,38 @@
         .weather-info {
             font-size: 18px;
             opacity: 0.9;
+        }
+
+        .weather-simulation {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .sim-btn {
+            padding: 15px;
+            border: none;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .sim-rain {
+            background: linear-gradient(135deg, #4facfe, #00f2fe);
+            color: #fff;
+        }
+
+        .sim-snow {
+            background: linear-gradient(135deg, #e0eafc, #cfdef3);
+            color: #333;
+        }
+
+        .sim-heat {
+            background: linear-gradient(135deg, #ff6b6b, #feca57);
+            color: #fff;
         }
 
         .hidden {
@@ -309,8 +463,18 @@
             display: block;
         }
 
+        /* Divider */
+        .divider {
+            height: 1px;
+            background: rgba(255, 255, 255, 0.1);
+            margin: 20px 0;
+        }
+
         @media (max-width: 400px) {
             .control-grid {
+                grid-template-columns: 1fr;
+            }
+            .weather-simulation {
                 grid-template-columns: 1fr;
             }
         }
@@ -363,20 +527,126 @@
 
             <!-- Steuerungs Tab -->
             <div class="tab-content active" id="controlTab">
+                
+                <!-- Wichtige Aktionen -->
                 <div class="card">
-                    <h2><span class="card-icon">💡</span> Licht Steuerung</h2>
-                    <div class="control-grid">
-                        <button class="control-btn" id="lightOnBtn" onclick="sendCommand('LIGHT_ON')">
-                            <span class="control-icon">💡</span>
-                            Licht AN
-                        </button>
-                        <button class="control-btn" id="lightOffBtn" onclick="sendCommand('LIGHT_OFF')">
-                            <span class="control-icon">🌙</span>
-                            Licht AUS
-                        </button>
+                    <h2><span class="card-icon">🚨</span> Schnellzugriff</h2>
+                    
+                    <!-- Haustür -->
+                    <div class="switch-container">
+                        <div class="switch-label">
+                            <span class="switch-icon">🚪</span>
+                            Haustür
+                        </div>
+                        <label class="switch">
+                            <input type="checkbox" onchange="toggleSwitch('DOOR', this.checked)">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+
+                    <!-- Haus verlassen -->
+                    <div class="switch-container">
+                        <div class="switch-label">
+                            <span class="switch-icon">🏃</span>
+                            Haus verlassen
+                        </div>
+                        <label class="switch">
+                            <input type="checkbox" onchange="toggleSwitch('LEAVE_HOME', this.checked)">
+                            <span class="slider"></span>
+                        </label>
                     </div>
                 </div>
 
+                <!-- Beleuchtung -->
+                <div class="card">
+                    <h2><span class="card-icon">💡</span> Beleuchtung</h2>
+                    
+                    <!-- Wohnzimmer -->
+                    <div class="switch-container">
+                        <div class="switch-label">
+                            <span class="switch-icon">🛋️</span>
+                            Wohnzimmer
+                        </div>
+                        <label class="switch">
+                            <input type="checkbox" onchange="toggleSwitch('LIGHT_LIVING', this.checked)">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+
+                    <!-- Küche -->
+                    <div class="switch-container">
+                        <div class="switch-label">
+                            <span class="switch-icon">🍳</span>
+                            Küche
+                        </div>
+                        <label class="switch">
+                            <input type="checkbox" onchange="toggleSwitch('LIGHT_KITCHEN', this.checked)">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+
+                    <!-- Schlafzimmer -->
+                    <div class="switch-container">
+                        <div class="switch-label">
+                            <span class="switch-icon">🛏️</span>
+                            Schlafzimmer
+                        </div>
+                        <label class="switch">
+                            <input type="checkbox" onchange="toggleSwitch('LIGHT_BEDROOM', this.checked)">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Rollos -->
+                <div class="card">
+                    <h2><span class="card-icon">🪟</span> Rollos</h2>
+                    <div class="button-group">
+                        <div class="button-row">
+                            <button class="action-btn btn-up" onclick="sendCommand('BLINDS_UP')">
+                                ⬆️ Hoch
+                            </button>
+                            <button class="action-btn btn-stop" onclick="sendCommand('BLINDS_STOP')">
+                                ⏹️ Stopp
+                            </button>
+                            <button class="action-btn btn-down" onclick="sendCommand('BLINDS_DOWN')">
+                                ⬇️ Runter
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Fenster -->
+                <div class="card">
+                    <h2><span class="card-icon">🌬️</span> Fenster</h2>
+                    <div class="button-group">
+                        <div class="button-row">
+                            <button class="action-btn btn-open" onclick="sendCommand('WINDOW_OPEN')">
+                                🔓 Auf
+                            </button>
+                            <button class="action-btn btn-close" onclick="sendCommand('WINDOW_CLOSE')">
+                                🔒 Zu
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Kaffeemaschine -->
+                <div class="card">
+                    <h2><span class="card-icon">☕</span> Kaffeemaschine</h2>
+                    <div class="switch-container">
+                        <div class="switch-label">
+                            <span class="switch-icon">☕</span>
+                            Kaffeemaschine
+                        </div>
+                        <label class="switch">
+                            <input type="checkbox" onchange="toggleSwitch('COFFEE', this.checked)">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- System Status -->
                 <div class="card">
                     <h2><span class="card-icon">📊</span> System Status</h2>
                     <button class="btn btn-secondary" onclick="sendCommand('GET_STATUS')">Status abfragen</button>
@@ -384,6 +654,46 @@
                         <div id="statusInfo"></div>
                     </div>
                 </div>
+
+                <!-- ========== HIER KANNST DU NEUE BUTTONS HINZUFÜGEN ========== -->
+                <!-- 
+                
+                BEISPIEL FÜR TOGGLE SWITCH:
+                <div class="card">
+                    <h2><span class="card-icon">🎵</span> Dein Titel</h2>
+                    <div class="switch-container">
+                        <div class="switch-label">
+                            <span class="switch-icon">🎵</span>
+                            Musikanlage
+                        </div>
+                        <label class="switch">
+                            <input type="checkbox" onchange="toggleSwitch('MUSIC', this.checked)">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                </div>
+
+                BEISPIEL FÜR BUTTON-GRUPPE:
+                <div class="card">
+                    <h2><span class="card-icon">🌡️</span> Heizung</h2>
+                    <div class="button-group">
+                        <div class="button-row">
+                            <button class="action-btn" onclick="sendCommand('HEAT_UP')">
+                                ➕ Wärmer
+                            </button>
+                            <button class="action-btn" onclick="sendCommand('HEAT_AUTO')">
+                                🔄 Auto
+                            </button>
+                            <button class="action-btn" onclick="sendCommand('HEAT_DOWN')">
+                                ➖ Kälter
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                -->
+                <!-- ========== ENDE: Neue Buttons Bereich ========== -->
+
             </div>
 
             <!-- WiFi Tab -->
@@ -391,7 +701,7 @@
                 <div class="card">
                     <h2><span class="card-icon">📡</span> WiFi Konfiguration</h2>
                     <div class="alert alert-info">
-                        Verbinde den Arduino mit deinem WLAN
+                        Beim nächsten Start verbindet sich der Arduino automatisch mit dem gespeicherten WLAN.
                     </div>
                     <div class="input-group">
                         <label>WLAN Name (SSID)</label>
@@ -412,11 +722,32 @@
             <div class="tab-content" id="weatherTab">
                 <div class="card">
                     <h2><span class="card-icon">🌤️</span> Wetter</h2>
-                    <button class="btn btn-primary" onclick="getWeather()">Wetter abrufen</button>
+                    <button class="btn btn-primary" onclick="getWeather()">Echtes Wetter abrufen</button>
                     <div id="weatherDisplay" class="weather-display hidden">
                         <div class="weather-info">🌡️</div>
                         <div class="temp" id="tempDisplay">--°C</div>
                         <div class="weather-info" id="weatherCondition">Lädt...</div>
+                    </div>
+
+                    <div class="divider"></div>
+
+                    <h2><span class="card-icon">🎭</span> Wetter Simulation</h2>
+                    <div class="alert alert-info">
+                        Simuliere verschiedene Wetterbedingungen für Tests
+                    </div>
+                    <div class="weather-simulation">
+                        <button class="sim-btn sim-rain" onclick="simulateWeather('rain')">
+                            🌧️ Regen
+                        </button>
+                        <button class="sim-btn sim-snow" onclick="simulateWeather('snow')">
+                            ❄️ Schnee
+                        </button>
+                        <button class="sim-btn sim-heat" onclick="simulateWeather('heat')">
+                            🔥 Hitzewelle
+                        </button>
+                        <button class="sim-btn" style="background: linear-gradient(135deg, #feca57, #ff9ff3);" onclick="simulateWeather('normal')">
+                            ☀️ Normal
+                        </button>
                     </div>
                 </div>
             </div>
@@ -434,7 +765,7 @@
         let statusCharacteristic;
         let isAuthenticated = false;
 
-        // UUIDs (müssen mit Arduino übereinstimmen!)
+        // UUIDs
         const SERVICE_UUID = '19b10000-e8f2-537e-4f6c-d104768a1214';
         const PIN_CHAR_UUID = '19b10001-e8f2-537e-4f6c-d104768a1214';
         const WIFI_CHAR_UUID = '19b10002-e8f2-537e-4f6c-d104768a1214';
@@ -447,7 +778,6 @@
                 document.getElementById('connectionStatus').classList.remove('hidden');
                 document.getElementById('connectBtn').disabled = true;
 
-                // Suche nach Bluetooth Gerät
                 bluetoothDevice = await navigator.bluetooth.requestDevice({
                     filters: [{ name: 'SmartHome_H7' }],
                     optionalServices: [SERVICE_UUID]
@@ -455,20 +785,16 @@
 
                 console.log('Gerät gefunden:', bluetoothDevice.name);
 
-                // Verbinde mit GATT Server
                 bleServer = await bluetoothDevice.gatt.connect();
                 console.log('GATT Server verbunden');
 
-                // Hole Service
                 const service = await bleServer.getPrimaryService(SERVICE_UUID);
 
-                // Hole alle Characteristics
                 pinCharacteristic = await service.getCharacteristic(PIN_CHAR_UUID);
                 wifiCharacteristic = await service.getCharacteristic(WIFI_CHAR_UUID);
                 commandCharacteristic = await service.getCharacteristic(COMMAND_CHAR_UUID);
                 statusCharacteristic = await service.getCharacteristic(STATUS_CHAR_UUID);
 
-                // Status Notifications aktivieren
                 await statusCharacteristic.startNotifications();
                 statusCharacteristic.addEventListener('characteristicvaluechanged', handleStatusChange);
 
@@ -497,14 +823,11 @@
             }
 
             try {
-                // PIN an Arduino senden
                 const encoder = new TextEncoder();
                 await pinCharacteristic.writeValue(encoder.encode(pin));
 
-                // Warte kurz auf Antwort
                 await new Promise(resolve => setTimeout(resolve, 500));
 
-                // Lese Antwort
                 const value = await pinCharacteristic.readValue();
                 const decoder = new TextDecoder();
                 const response = decoder.decode(value);
@@ -551,7 +874,6 @@
                 const encoder = new TextEncoder();
                 await wifiCharacteristic.writeValue(encoder.encode(wifiData));
 
-                // Warte auf Antwort
                 await new Promise(resolve => setTimeout(resolve, 2000));
 
                 const value = await wifiCharacteristic.readValue();
@@ -564,7 +886,7 @@
                 statusDiv.classList.remove('hidden');
 
                 if (response.status === 'connected') {
-                    statusDiv.innerHTML = `<div class="alert alert-success">✓ Verbunden!<br>IP: ${response.ip || 'N/A'}</div>`;
+                    statusDiv.innerHTML = `<div class="alert alert-success">✓ Verbunden!<br>IP: ${response.ip || 'N/A'}<br><br>Beim nächsten Start verbindet sich der Arduino automatisch.</div>`;
                 } else {
                     statusDiv.innerHTML = `<div class="alert alert-error">✗ Verbindung fehlgeschlagen</div>`;
                 }
@@ -576,6 +898,12 @@
                 document.getElementById('wifiSubmitBtn').disabled = false;
                 document.getElementById('wifiSubmitBtn').textContent = 'WLAN verbinden';
             }
+        }
+
+        // Toggle Switch Handler
+        async function toggleSwitch(device, isOn) {
+            const command = device + (isOn ? '_ON' : '_OFF');
+            await sendCommand(command);
         }
 
         // Command senden
@@ -591,15 +919,8 @@
 
                 console.log('Command gesendet:', command);
 
-                // Visuelle Feedback
-                if (command === 'LIGHT_ON') {
-                    document.getElementById('lightOnBtn').classList.add('active');
-                    document.getElementById('lightOffBtn').classList.remove('active');
-                } else if (command === 'LIGHT_OFF') {
-                    document.getElementById('lightOffBtn').classList.add('active');
-                    document.getElementById('lightOnBtn').classList.remove('active');
-                } else if (command === 'GET_STATUS') {
-                    // Warte kurz und lese Antwort
+                // Spezielle Behandlung für GET_STATUS
+                if (command === 'GET_STATUS') {
                     await new Promise(resolve => setTimeout(resolve, 500));
                     const value = await commandCharacteristic.readValue();
                     const decoder = new TextDecoder();
@@ -619,12 +940,11 @@
             }
         }
 
-        // Wetter abrufen
+        // Echtes Wetter abrufen
         async function getWeather() {
             try {
                 await sendCommand('GET_WEATHER');
 
-                // Warte auf Antwort
                 await new Promise(resolve => setTimeout(resolve, 1000));
 
                 const value = await commandCharacteristic.readValue();
@@ -642,7 +962,7 @@
 
                 document.getElementById('weatherDisplay').classList.remove('hidden');
                 document.getElementById('tempDisplay').textContent = weather.temp + '°C';
-                document.getElementById('weatherCondition').textContent = weather.status || 'Dummy Daten';
+                document.getElementById('weatherCondition').textContent = weather.status || 'Aktuelle Daten';
 
             } catch (error) {
                 console.error('Wetter Fehler:', error);
@@ -650,7 +970,27 @@
             }
         }
 
-        // Status Updates von Arduino
+        // Wetter Simulation
+        async function simulateWeather(type) {
+            const simulations = {
+                rain: { temp: 12, condition: 'Regen', icon: '🌧️' },
+                snow: { temp: -3, condition: 'Schnee', icon: '❄️' },
+                heat: { temp: 38, condition: 'Hitzewelle', icon: '🔥' },
+                normal: { temp: 22, condition: 'Sonnig', icon: '☀️' }
+            };
+
+            const sim = simulations[type];
+
+            // Sende Command an Arduino
+            await sendCommand('WEATHER_SIM_' + type.toUpperCase());
+
+            // Zeige Simulation in der App
+            document.getElementById('weatherDisplay').classList.remove('hidden');
+            document.getElementById('tempDisplay').textContent = sim.temp + '°C';
+            document.getElementById('weatherCondition').textContent = sim.icon + ' ' + sim.condition + ' (Simulation)';
+        }
+
+        // Status Updates
         function handleStatusChange(event) {
             const value = event.target.value;
             const decoder = new TextDecoder();
@@ -660,7 +1000,6 @@
 
         // Tab Wechsel
         function switchTab(tabName) {
-            // Alle Tabs deaktivieren
             document.querySelectorAll('.tab-content').forEach(tab => {
                 tab.classList.remove('active');
             });
@@ -668,7 +1007,6 @@
                 btn.classList.remove('active');
             });
 
-            // Aktiven Tab aktivieren
             document.getElementById(tabName + 'Tab').classList.add('active');
             event.target.classList.add('active');
         }
@@ -680,7 +1018,7 @@
             badge.textContent = text;
         }
 
-        // Enter-Taste für PIN
+        // Enter für PIN
         document.getElementById('pinInput').addEventListener('keypress', (e) => {
             if (e.key === 'Enter') {
                 document.getElementById('pinSubmitBtn').click();
