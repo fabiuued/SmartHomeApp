@@ -1164,6 +1164,14 @@
         }
         // ===== AUTOMATION STEUERUNG =====
 
+         
+        // Enter für PIN
+        document.getElementById('pinInput').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                document.getElementById('pinSubmitBtn').click();
+            }
+        });
+        
         // Toggle Automation An/Aus
         async function toggleAutomation(isOn) {
             const command = isOn ? "AUTOMATION_ON" : "AUTOMATION_OFF";
@@ -1213,13 +1221,6 @@
                 }
             }, 60000); // Jede Minute
         }
-         
-        // Enter für PIN
-        document.getElementById('pinInput').addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') {
-                document.getElementById('pinSubmitBtn').click();
-            }
-        });
     </script>
 </body>
 </html>
