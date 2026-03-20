@@ -1162,46 +1162,58 @@
             badge.className = 'status-badge status-' + type;
             badge.textContent = text;
         }
-                <!-- Automation Control -->
-        <div class="card">
-            <h2><span class="card-icon">🤖</span> Automation</h2>
-            <div class="alert alert-info">
-                Steuere die automatischen Wetter-Reaktionen
-            </div>
+        // ===== AUTOMATION STEUERUNG =====
+
+        // Toggle Automation An/Aus
+        async function toggleAutomation(isOn) {
+            const command = isOn ? "AUTOMATION_ON" : "AUTOMATION_OFF";
+            await sendCommand(command);
             
-            <!-- Toggle Switch für An/Aus -->
-            <div class="switch-container">
-                <div class="switch-label">
-                    <span class="switch-icon">🤖</span>
-                    Automation
-                </div>
-                <label class="switch">
-                    <input type="checkbox" id="automationToggle" checked onchange="toggleAutomation(this.checked)">
-                    <span class="slider"></span>
-                </label>
-            </div>
+            console.log("Automation: " + (isOn ? "AN" : "AUS"));
+            
+            // Zeige/Verstecke Pause-Sektion
+            document.getElementById('pauseSection').style.display = isOn ? 'block' : 'none';
+        }
         
-            <!-- Pause Timer -->
-            <div id="pauseSection">
-                <div class="divider"></div>
-                <h3 style="font-size: 16px; margin-bottom: 15px;">⏸️ Temporär pausieren</h3>
+        // Automation pausieren
+        async function pauseAutomation() {
+            const duration = document.getElementById('pauseDuration').value;
+            
+            if (duration < 5) {
+                alert('Mindestens 5 Minuten!');
+                return;
+            }
+            
+            // Sende Command mit Dauer
+            const command = "AUTOMATION_PAUSE:" + duration;
+            await sendCommand(command);
+            
+            // Zeige Status
+            document.getElementById('pauseStatus').classList.remove('hidden');
+            document.getElementById('pauseRemaining').textContent = duration;
+            
+            console.log("Automation pausiert für " + duration + " Minuten");
+            
+            // Optional: Countdown starten
+            startPauseCountdown(duration);
+        }
+        
+        // Countdown für Pause-Anzeige
+        function startPauseCountdown(minutes) {
+            let remaining = minutes;
+            
+            const interval = setInterval(() => {
+                remaining--;
+                document.getElementById('pauseRemaining').textContent = remaining;
                 
-                <div class="input-group">
-                    <label>Pause-Dauer (Minuten)</label>
-                    <input type="number" id="pauseDuration" value="30" min="5" max="1440" step="5">
-                </div>
-                
-                <button class="btn btn-secondary" onclick="pauseAutomation()">
-                    Pausieren
-                </button>
-                
-                <div id="pauseStatus" class="hidden" style="margin-top: 15px;">
-                    <div class="alert alert-info">
-                        ⏸️ Automation pausiert für <span id="pauseRemaining">--</span> Minuten
-                    </div>
-                </div>
-            </div>
-        </div>
+                if (remaining <= 0) {
+                    clearInterval(interval);
+                    document.getElementById('pauseStatus').classList.add('hidden');
+                    console.log("Automation-Pause beendet");
+                }
+            }, 60000); // Jede Minute
+        }
+         
         // Enter für PIN
         document.getElementById('pinInput').addEventListener('keypress', (e) => {
             if (e.key === 'Enter') {
