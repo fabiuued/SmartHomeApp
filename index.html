@@ -685,7 +685,46 @@
                         </label>
                     </div>
                 </div>
-
+                <!-- Automation Control -->
+                <div class="card">
+                    <h2><span class="card-icon">🤖</span> Automation</h2>
+                    <div class="alert alert-info">
+                        Steuere die automatischen Wetter-Reaktionen
+                    </div>
+                    
+                    <!-- Toggle Switch für An/Aus -->
+                    <div class="switch-container">
+                        <div class="switch-label">
+                            <span class="switch-icon">🤖</span>
+                            Automation
+                        </div>
+                        <label class="switch">
+                            <input type="checkbox" id="automationToggle" checked onchange="toggleAutomation(this.checked)">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                
+                    <!-- Pause Timer -->
+                    <div id="pauseSection">
+                        <div class="divider"></div>
+                        <h3 style="font-size: 16px; margin-bottom: 15px;">⏸️ Temporär pausieren</h3>
+                        
+                        <div class="input-group">
+                            <label>Pause-Dauer (Minuten)</label>
+                            <input type="number" id="pauseDuration" value="30" min="5" max="1440" step="5">
+                        </div>
+                        
+                        <button class="btn btn-secondary" onclick="pauseAutomation()">
+                            Pausieren
+                        </button>
+                        
+                        <div id="pauseStatus" class="hidden" style="margin-top: 15px;">
+                            <div class="alert alert-info">
+                                ⏸️ Automation pausiert für <span id="pauseRemaining">--</span> Minuten
+                            </div>
+                        </div>
+                    </div>
+                </div>
                 <!-- Wecker -->
                 <div class="card">
                     <h2><span class="card-icon">⏰</span> Wecker</h2>
@@ -1123,7 +1162,46 @@
             badge.className = 'status-badge status-' + type;
             badge.textContent = text;
         }
-
+                <!-- Automation Control -->
+        <div class="card">
+            <h2><span class="card-icon">🤖</span> Automation</h2>
+            <div class="alert alert-info">
+                Steuere die automatischen Wetter-Reaktionen
+            </div>
+            
+            <!-- Toggle Switch für An/Aus -->
+            <div class="switch-container">
+                <div class="switch-label">
+                    <span class="switch-icon">🤖</span>
+                    Automation
+                </div>
+                <label class="switch">
+                    <input type="checkbox" id="automationToggle" checked onchange="toggleAutomation(this.checked)">
+                    <span class="slider"></span>
+                </label>
+            </div>
+        
+            <!-- Pause Timer -->
+            <div id="pauseSection">
+                <div class="divider"></div>
+                <h3 style="font-size: 16px; margin-bottom: 15px;">⏸️ Temporär pausieren</h3>
+                
+                <div class="input-group">
+                    <label>Pause-Dauer (Minuten)</label>
+                    <input type="number" id="pauseDuration" value="30" min="5" max="1440" step="5">
+                </div>
+                
+                <button class="btn btn-secondary" onclick="pauseAutomation()">
+                    Pausieren
+                </button>
+                
+                <div id="pauseStatus" class="hidden" style="margin-top: 15px;">
+                    <div class="alert alert-info">
+                        ⏸️ Automation pausiert für <span id="pauseRemaining">--</span> Minuten
+                    </div>
+                </div>
+            </div>
+        </div>
         // Enter für PIN
         document.getElementById('pinInput').addEventListener('keypress', (e) => {
             if (e.key === 'Enter') {
