@@ -1,0 +1,17 @@
+{
+  "name": "Smart Home Control",
+  "short_name": "Smart Home",
+  "display": "standalone",
+  "start_url": "./",
+  "background_color": "#1a1a2e",
+  "theme_color": "#1a1a2e",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "icon.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
