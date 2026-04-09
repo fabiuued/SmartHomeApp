@@ -1,6 +1,6 @@
 {
-  "name": "Smart Home Control",
-  "short_name": "Smart Home",
+  "name": "Anticipa Smart Home Control",
+  "short_name": "Anticipa",
   "display": "standalone",
   "start_url": "./",
   "background_color": "#1a1a2e",
@@ -9,7 +9,7 @@
   "icons": [
     {
       "src": "icon.png",
-      "sizes": "512x512",
+      "sizes": "1024x1024",
       "type": "image/png",
       "purpose": "any maskable"
     }
